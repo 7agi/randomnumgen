@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>random number generator</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>random number generator</h1>
+        </header>
+
+        <main>
+            <!-- Music Scale Section -->
+            <section id="music-section">
+                <div class="card-header">
+                    <h2>music scale</h2>
+                    <div class="toggle-container">
+                        <label class="switch">
+                            <input type="checkbox" id="lock-scale">
+                            <span class="slider"></span>
+                        </label>
+                        <span>lock scale</span>
+                    </div>
+                </div>
+                <div class="scale-display">
+                    <span id="current-scale">---</span>
+                    <span id="scale-notes">---</span>
+                </div>
+                <button id="btn-random-scale">randomize scale</button>
+            </section>
+
+            <!-- RNG Section -->
+            <section id="rng-section">
+                <div class="card-header">
+                    <h2>random number settings</h2>
+                    <div class="toggle-container">
+                        <label class="switch">
+                            <input type="checkbox" id="no-repeats">
+                            <span class="slider"></span>
+                        </label>
+                        <span>no repeats</span>
+                    </div>
+                </div>
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label>min</label>
+                        <input type="number" id="input-min" value="1">
+                    </div>
+                    <div class="control-group">
+                        <label>max</label>
+                        <input type="number" id="input-max" value="7">
+                    </div>
+                    <div class="control-group">
+                        <label>cols</label>
+                        <input type="number" id="input-cols" value="4">
+                    </div>
+                    <div class="control-group">
+                        <label>rows</label>
+                        <input type="number" id="input-rows" value="1">
+                    </div>
+                </div>
+                <button id="btn-generate" class="primary">generate</button>
+            </section>
+
+            <!-- Grid Display Section (Side-by-Side) -->
+            <section id="result-section" class="side-layout">
+                <div id="grid-container"></div>
+                <div id="translation-container"></div>
+            </section>
+        </main>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
