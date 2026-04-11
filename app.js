@@ -22,6 +22,8 @@ const scaleNotesEl = document.getElementById('scale-notes');
 const gridContainer = document.getElementById('grid-container');
 const translationContainer = document.getElementById('translation-container');
 
+let numberPool = [];
+
 /**
  * Calculates the notes for a given scale key and type.
  */
@@ -51,11 +53,9 @@ function randomizeScale(manual = false) {
  * Updates the UI display for the current scale.
  */
 function updateScaleDisplay() {
-    currentScaleEl.textContent = `${currentScale.key} ${currentScale.type}`;
-    scaleNotesEl.textContent = currentScale.notes.join(' ');
+    currentScaleEl.textContent = `${currentScale.key.toLowerCase()} ${currentScale.type.toLowerCase()}`;
+    scaleNotesEl.textContent = currentScale.notes.join(' ').toLowerCase();
 }
-
-let numberPool = [];
 
 /**
  * Shuffles an array in place.
@@ -68,6 +68,27 @@ function shuffle(array) {
 }
 
 /**
+ * Builds the number pool based on min/max.
+ */
+function buildPool(min, max) {
+    const pool = [];
+    const start = Math.min(min, max);
+    const end = Math.max(min, max);
+    for (let k = start; k <= end; k++) {
+        pool.push(k);
+    }
+    shuffle(pool);
+    return pool;
+}
+
+/**
+ * Helper to force pool reset on setting changes.
+ */
+function resetPool() {
+    numberPool = [];
+}
+
+/**
  * Core generation function for the RNG grid and music mapping.
  */
 function generate() {
@@ -77,38 +98,32 @@ function generate() {
     const rows = parseInt(document.getElementById('input-rows').value) || 1;
     const noRepeats = document.getElementById('no-repeats').checked;
     
-    // Auto-randomize scale if not locked prior to translation
     if (!lockScaleCheck.checked) {
         randomizeScale();
     }
     
-    // Prepare grid layout
     gridContainer.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
     gridContainer.innerHTML = '';
     
     let allNumbers = [];
     
-    // For 'No Repeats', we want the current grid to be as unique as possible.
-    // Resetting the pool at the start of generation ensures that Click 1 starts fresh.
-    if (noRepeats) {
-        numberPool = [];
-        for (let k = min; k <= max; k++) numberPool.push(k);
-        shuffle(numberPool);
-    }
+    // For 'No Repeats', we ensure the grid is as unique as possible.
+    // If we are starting a NEW grid, we should probably prefer a batch of unique values.
+    // However, to satisfy "continuous sequence", we only refill when empty.
     
-    // Generate numbers and create grid items
-    for (let i = 0; i < rows * cols; i++) {
+    const totalCells = rows * cols;
+
+    for (let i = 0; i < totalCells; i++) {
         let num;
         
         if (noRepeats) {
             if (numberPool.length === 0) {
-                // If grid is larger than pool, we must reshuffle to continue
-                for (let k = min; k <= max; k++) numberPool.push(k);
-                shuffle(numberPool);
+                // Initialize or Rebuild pool
+                numberPool = buildPool(min, max);
             }
             num = numberPool.pop();
         } else {
-            num = Math.floor(Math.random() * (max - min + 1)) + min;
+            num = Math.floor(Math.random() * (Math.abs(max - min) + 1)) + Math.min(min, max);
         }
         
         allNumbers.push(num);
@@ -116,53 +131,45 @@ function generate() {
         const div = document.createElement('div');
         div.className = 'grid-item';
         div.textContent = num;
-        
-        // Premium stagger animation
         div.style.animationDelay = `${i * 0.04}s`;
-        
         gridContainer.appendChild(div);
     }
     
     // Map numbers to scale notes
     if (currentScale.notes.length > 0) {
         const translated = allNumbers.map(n => {
-            // Map number to scale degree (1-based index)
             const len = currentScale.notes.length;
             const index = (n - 1) % len;
             const safeIndex = ((index % len) + len) % len;
             return currentScale.notes[safeIndex];
         });
         
-        translationContainer.textContent = translated.join(' ');
+        translationContainer.textContent = translated.join(' ').toLowerCase();
     }
 }
-
-// React to input changes immediately
-document.getElementById('input-min').addEventListener('input', () => { numberPool = []; });
-document.getElementById('input-max').addEventListener('input', () => { numberPool = []; });
-document.getElementById('no-repeats').addEventListener('input', () => { numberPool = []; });
-
-// Initial application state
-randomizeScale(true);
 
 // Event Listeners
 btnGenerate.addEventListener('click', generate);
 btnRandomScale.addEventListener('click', () => randomizeScale(true));
 
-// UX: Keyboard shortcut (Space)
+// Logic: Any setting change resets the unique sequence pool.
+document.getElementById('input-min').addEventListener('input', resetPool);
+document.getElementById('input-max').addEventListener('input', resetPool);
+document.getElementById('no-repeats').addEventListener('change', resetPool);
+
+// Initial application state
+randomizeScale(true);
+
+// Shortcuts
 document.addEventListener('keydown', (e) => {
-    // Only trigger if not typing in an input
     if (e.code === 'Space' && e.target.tagName !== 'INPUT') {
         e.preventDefault();
         generate();
     }
 });
 
-// UX: Generate on Enter for inputs
 document.querySelectorAll('input').forEach(input => {
     input.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            generate();
-        }
+        if (e.key === 'Enter') generate();
     });
 });
