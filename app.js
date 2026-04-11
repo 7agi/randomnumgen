@@ -22,8 +22,6 @@ const scaleNotesEl = document.getElementById('scale-notes');
 const gridContainer = document.getElementById('grid-container');
 const translationContainer = document.getElementById('translation-container');
 
-let numberPool = [];
-
 /**
  * Calculates the notes for a given scale key and type.
  */
@@ -68,27 +66,6 @@ function shuffle(array) {
 }
 
 /**
- * Builds the number pool based on min/max.
- */
-function buildPool(min, max) {
-    const pool = [];
-    const start = Math.min(min, max);
-    const end = Math.max(min, max);
-    for (let k = start; k <= end; k++) {
-        pool.push(k);
-    }
-    shuffle(pool);
-    return pool;
-}
-
-/**
- * Helper to force pool reset on setting changes.
- */
-function resetPool() {
-    numberPool = [];
-}
-
-/**
  * Core generation function for the RNG grid and music mapping.
  */
 function generate() {
@@ -107,9 +84,18 @@ function generate() {
     
     let allNumbers = [];
     
-    // For 'No Repeats', we ensure the grid is as unique as possible.
-    // If we are starting a NEW grid, we should probably prefer a batch of unique values.
-    // However, to satisfy "continuous sequence", we only refill when empty.
+    // Create a FRESH pool for every generation click.
+    // This ensures that 'No Repeats' means 'Every item in this current grid is unique'
+    // (as long as the range is large enough).
+    let localPool = [];
+    if (noRepeats) {
+        const start = Math.min(min, max);
+        const end = Math.max(min, max);
+        for (let k = start; k <= end; k++) {
+            localPool.push(k);
+        }
+        shuffle(localPool);
+    }
     
     const totalCells = rows * cols;
 
@@ -117,11 +103,16 @@ function generate() {
         let num;
         
         if (noRepeats) {
-            if (numberPool.length === 0) {
-                // Initialize or Rebuild pool
-                numberPool = buildPool(min, max);
+            if (localPool.length === 0) {
+                // If we ran out of unique numbers for this *specific* grid because 
+                // the grid is larger than the range, we must refill and allow 
+                // unavoidable repeats.
+                const start = Math.min(min, max);
+                const end = Math.max(min, max);
+                for (let k = start; k <= end; k++) localPool.push(k);
+                shuffle(localPool);
             }
-            num = numberPool.pop();
+            num = localPool.pop();
         } else {
             num = Math.floor(Math.random() * (Math.abs(max - min) + 1)) + Math.min(min, max);
         }
@@ -148,17 +139,12 @@ function generate() {
     }
 }
 
+// Initial application state
+randomizeScale(true);
+
 // Event Listeners
 btnGenerate.addEventListener('click', generate);
 btnRandomScale.addEventListener('click', () => randomizeScale(true));
-
-// Logic: Any setting change resets the unique sequence pool.
-document.getElementById('input-min').addEventListener('input', resetPool);
-document.getElementById('input-max').addEventListener('input', resetPool);
-document.getElementById('no-repeats').addEventListener('change', resetPool);
-
-// Initial application state
-randomizeScale(true);
 
 // Shortcuts
 document.addEventListener('keydown', (e) => {
