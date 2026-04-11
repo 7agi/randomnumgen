@@ -88,9 +88,13 @@ function generate() {
     
     let allNumbers = [];
     
-    // Reset pool if it's empty or bounds changed? 
-    // Simplified: Reset if empty or if range has changed
-    // Actually, user just wants "no repeats" until exhausted.
+    // For 'No Repeats', we want the current grid to be as unique as possible.
+    // Resetting the pool at the start of generation ensures that Click 1 starts fresh.
+    if (noRepeats) {
+        numberPool = [];
+        for (let k = min; k <= max; k++) numberPool.push(k);
+        shuffle(numberPool);
+    }
     
     // Generate numbers and create grid items
     for (let i = 0; i < rows * cols; i++) {
@@ -98,7 +102,7 @@ function generate() {
         
         if (noRepeats) {
             if (numberPool.length === 0) {
-                // Rebuild pool
+                // If grid is larger than pool, we must reshuffle to continue
                 for (let k = min; k <= max; k++) numberPool.push(k);
                 shuffle(numberPool);
             }
@@ -123,24 +127,20 @@ function generate() {
     if (currentScale.notes.length > 0) {
         const translated = allNumbers.map(n => {
             // Map number to scale degree (1-based index)
-            // Formula: (n - 1) MOD (Scale Length)
             const len = currentScale.notes.length;
             const index = (n - 1) % len;
-            
-            // Safe modulo for mapping
             const safeIndex = ((index % len) + len) % len;
             return currentScale.notes[safeIndex];
         });
         
-        // Show as a flat string of notes
         translationContainer.textContent = translated.join(' ');
     }
 }
 
-// Reset pool when settings change to keep it accurate
-document.getElementById('input-min').addEventListener('change', () => { numberPool = []; });
-document.getElementById('input-max').addEventListener('change', () => { numberPool = []; });
-document.getElementById('no-repeats').addEventListener('change', () => { numberPool = []; });
+// React to input changes immediately
+document.getElementById('input-min').addEventListener('input', () => { numberPool = []; });
+document.getElementById('input-max').addEventListener('input', () => { numberPool = []; });
+document.getElementById('no-repeats').addEventListener('input', () => { numberPool = []; });
 
 // Initial application state
 randomizeScale(true);
