@@ -111,6 +111,9 @@ function generate() {
                 const end = Math.max(min, max);
                 for (let k = start; k <= end; k++) localPool.push(k);
                 shuffle(localPool);
+                statusEl.textContent = '(range exhausted, repeating)';
+            } else {
+                statusEl.textContent = '';
             }
             num = localPool.pop();
         } else {
