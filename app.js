@@ -55,6 +55,18 @@ function updateScaleDisplay() {
     scaleNotesEl.textContent = currentScale.notes.join(' ');
 }
 
+let numberPool = [];
+
+/**
+ * Shuffles an array in place.
+ */
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
 /**
  * Core generation function for the RNG grid and music mapping.
  */
@@ -63,6 +75,7 @@ function generate() {
     const max = parseInt(document.getElementById('input-max').value) || 7;
     const cols = parseInt(document.getElementById('input-cols').value) || 1;
     const rows = parseInt(document.getElementById('input-rows').value) || 1;
+    const noRepeats = document.getElementById('no-repeats').checked;
     
     // Auto-randomize scale if not locked prior to translation
     if (!lockScaleCheck.checked) {
@@ -75,9 +88,25 @@ function generate() {
     
     let allNumbers = [];
     
+    // Reset pool if it's empty or bounds changed? 
+    // Simplified: Reset if empty or if range has changed
+    // Actually, user just wants "no repeats" until exhausted.
+    
     // Generate numbers and create grid items
     for (let i = 0; i < rows * cols; i++) {
-        const num = Math.floor(Math.random() * (max - min + 1)) + min;
+        let num;
+        
+        if (noRepeats) {
+            if (numberPool.length === 0) {
+                // Rebuild pool
+                for (let k = min; k <= max; k++) numberPool.push(k);
+                shuffle(numberPool);
+            }
+            num = numberPool.pop();
+        } else {
+            num = Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+        
         allNumbers.push(num);
         
         const div = document.createElement('div');
@@ -107,6 +136,11 @@ function generate() {
         translationContainer.textContent = translated.join(' ');
     }
 }
+
+// Reset pool when settings change to keep it accurate
+document.getElementById('input-min').addEventListener('change', () => { numberPool = []; });
+document.getElementById('input-max').addEventListener('change', () => { numberPool = []; });
+document.getElementById('no-repeats').addEventListener('change', () => { numberPool = []; });
 
 // Initial application state
 randomizeScale(true);
