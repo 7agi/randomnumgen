@@ -1,0 +1,245 @@
+:root {
+    --bg-color: #1a1a1a;
+    --text-color: #fff;
+    --accent-color: #fff;
+    --border-color: #333;
+    --input-bg: #222;
+    --font-family: 'Inter', sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--font-family);
+    line-height: 1.6;
+    display: flex;
+    justify-content: center;
+    padding: 60px 20px;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1100px;
+    width: 100%;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 80px;
+}
+
+header h1 {
+    font-weight: 200;
+    letter-spacing: -1px;
+    font-size: 2.5rem;
+    text-transform: lowercase;
+}
+
+/* Section Layout */
+main > section {
+    margin-bottom: 80px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #444;
+}
+
+.toggle-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.8rem;
+    color: #444;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Display Areas */
+.display-area {
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 0;
+}
+
+#scale-display {
+    font-size: 2.5rem;
+    font-weight: 600;
+    letter-spacing: -1px;
+}
+
+#scale-notes {
+    font-size: 1rem;
+    color: #555;
+    font-family: var(--font-family);
+    word-spacing: 12px;
+}
+
+/* Controls */
+.controls-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.control-group label {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    color: #444;
+    letter-spacing: 1px;
+}
+
+input[type="number"] {
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    color: #fff;
+    padding: 12px 0;
+    font-family: var(--font-family);
+    outline: none;
+    font-size: 1.2rem;
+    transition: border-color 0.2s;
+}
+
+input[type="number"]:focus {
+    border-color: #888;
+}
+
+button {
+    width: 100%;
+    padding: 20px;
+    border: 1px solid #fff;
+    background: transparent;
+    color: #fff;
+    border-radius: 0;
+    cursor: pointer;
+    font-family: var(--font-family);
+    font-weight: 400;
+    transition: all 0.2s ease;
+    text-transform: lowercase;
+    font-size: 1.2rem;
+}
+
+button:hover {
+    background-color: #fff;
+    color: #000;
+}
+
+button.primary {
+    background-color: #fff;
+    color: #000;
+    font-weight: 600;
+}
+
+button.primary:hover {
+    background-color: transparent;
+    color: #fff;
+    border-color: #fff;
+}
+
+/* Side Layout Results */
+.side-layout {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 60px;
+    align-items: start;
+    margin-top: 60px;
+}
+
+#grid-container {
+    display: grid;
+    gap: 12px;
+}
+
+.grid-item {
+    aspect-ratio: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.2rem;
+    font-weight: 200;
+    border: 1px solid #2a2a2a;
+    animation: fadeIn 0.4s ease forwards;
+}
+
+#translation-container {
+    text-align: left;
+    font-size: 2.2rem;
+    line-height: 1.2;
+    letter-spacing: 4px;
+    font-weight: 200;
+    color: #fff;
+    font-family: var(--font-family);
+    text-transform: uppercase;
+    word-break: break-all;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@media (max-width: 768px) {
+    .side-layout {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+}
+
+/* Switch styling simplified */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 18px;
+}
+
+.switch input { opacity: 0; width: 0; height: 0; }
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #2a2a2a;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px; width: 14px;
+  left: 2px; bottom: 2px;
+  background-color: white;
+  transition: .4s;
+}
+
+input:checked + .slider { background-color: #888; }
+input:checked + .slider:before { transform: translateX(16px); }
