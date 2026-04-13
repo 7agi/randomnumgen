@@ -130,6 +130,53 @@ input[type="number"]:focus {
     border-color: #888;
 }
 
+/* Scale Picker Row */
+.scale-controls {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 12px;
+}
+
+.scale-picker {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+}
+
+select {
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    color: #fff;
+    padding: 12px 0;
+    font-family: var(--font-family);
+    outline: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+    appearance: none;
+    text-transform: lowercase;
+}
+
+select:focus {
+    border-color: #888;
+}
+
+select option {
+    background-color: #111;
+    color: #fff;
+}
+
+/* No Repeats Status Label */
+#no-repeats-status {
+    font-size: 0.6rem;
+    color: #444;
+    margin-left: 10px;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
 button {
     width: 100%;
     padding: 20px;

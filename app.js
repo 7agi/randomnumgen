@@ -143,6 +143,23 @@ function generate() {
     }
 }
 
+/**
+ * Sets the scale manually from the dropdown selectors.
+ */
+function setManualScale() {
+    const key = document.getElementById('select-key').value;
+    const type = document.getElementById('select-type').value;
+    
+    currentScale.key = key;
+    currentScale.type = type;
+    currentScale.notes = calculateScaleNotes(key, type);
+    
+    // Automatically lock the scale when manually set to prevent randomization
+    document.getElementById('lock-scale').checked = true;
+    
+    updateScaleUI();
+}
+
 // --- Initialization & Listeners ---
 
 // Initial setup
@@ -151,6 +168,7 @@ randomizeScale(true);
 // Click Listeners
 document.getElementById('btn-generate').addEventListener('click', generate);
 document.getElementById('btn-random-scale').addEventListener('click', () => randomizeScale(true));
+document.getElementById('btn-set-scale').addEventListener('click', setManualScale);
 
 // Shortcut Handlers
 document.addEventListener('keydown', (e) => {
